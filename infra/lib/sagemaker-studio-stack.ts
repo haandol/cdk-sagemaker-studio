@@ -46,8 +46,9 @@ export class SagemakerStudioStack extends cdk.Stack {
         executionRole: executionRole.roleArn,
       },
     });
+    userProfile.addDependency(domain);
 
-    new sm.CfnApp(this, 'DefaultJupyterServerApp', {
+    const app = new sm.CfnApp(this, 'DefaultJupyterServerApp', {
       appName: 'default',
       appType: 'JupyterServer',
       domainId: domain.attrDomainId,
@@ -56,5 +57,6 @@ export class SagemakerStudioStack extends cdk.Stack {
         instanceType: 'system',
       },
     });
+    app.addDependency(userProfile);
   }
 }
