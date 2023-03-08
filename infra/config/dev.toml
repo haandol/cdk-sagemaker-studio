@@ -1,0 +1,10 @@
+[app]
+ns="sagemaker-studio-demo"
+stage="dev"
+
+[vpc]
+id=""
+subnetIds=[""]
+
+[sagemaker]
+domainName="my-demo"
