@@ -1,6 +1,6 @@
 [app]
-ns="sagemaker-studio-demo"
-stage="dev"
+ns="SagemakerStudioDemo"
+stage="Dev"
 
 [vpc]
 id=""
