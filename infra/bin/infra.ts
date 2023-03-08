@@ -6,12 +6,12 @@ import { Config } from '../config/loader';
 
 const app = new cdk.App({
   context: {
-    ns: Config.ns,
-    stage: Config.stage,
+    ns: Config.app.ns,
+    stage: Config.app.stage,
   },
 });
 
-new SagemakerStudioStack(app, `${Config.ns}SagemakerStudioStack`, {
+new SagemakerStudioStack(app, `${Config.app.ns}SagemakerStudioStack`, {
   vpcId: Config.vpc.id,
   subnetIds: Config.vpc.subnetIds,
   domainName: Config.sagemaker.domainName,

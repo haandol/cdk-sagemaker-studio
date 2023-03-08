@@ -47,8 +47,8 @@ export class SagemakerStudioStack extends cdk.Stack {
       },
     });
 
-    const notebookApp = new sm.CfnApp(this, 'JupyterServerApp', {
-      appName: 'notebook',
+    new sm.CfnApp(this, 'DefaultJupyterServerApp', {
+      appName: 'default',
       appType: 'JupyterServer',
       domainId: domain.attrDomainId,
       userProfileName: userProfile.userProfileName,

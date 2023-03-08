@@ -4,9 +4,10 @@ import * as toml from 'toml';
 import * as fs from 'fs';
 
 interface IConfig {
-  ns: string;
-  stage: string;
-  isProd: () => boolean;
+  app: {
+    ns: string;
+    stage: string;
+  };
   vpc: {
     id: string;
     subnetIds: string[];
