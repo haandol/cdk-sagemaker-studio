@@ -22,6 +22,17 @@ export class SagemakerStudioStack extends cdk.Stack {
         ),
       ],
     });
+    executionRole.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: [
+          's3:GetObject',
+          's3:PutObject',
+          's3:DeleteObject',
+          's3:ListBucket',
+        ],
+        resources: ['arn:aws:s3:::*'],
+      })
+    );
 
     const domain = new sm.CfnDomain(this, 'SageMakerDomain', {
       authMode: 'IAM',
