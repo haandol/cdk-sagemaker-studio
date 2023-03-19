@@ -44,4 +44,10 @@ if (error) {
   throw new Error(`Config validation error: ${error.message}`);
 }
 
-export const Config: IConfig = cfg;
+export const Config: IConfig = {
+  ...cfg,
+  app: {
+    ...cfg.app,
+    ns: `${cfg.app.ns}${cfg.app.stage}`,
+  },
+};
