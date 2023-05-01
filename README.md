@@ -26,6 +26,16 @@ $ npm i -g aws-cdk@2.77.0
 $ npm i
 ```
 
+## Enable Project templates
+
+> Enable Project templates and JumpStart for Studio users before Run any Apps
+
+1. Move to [Domains](https://ap-northeast-2.console.aws.amazon.com/sagemaker/home?region=ap-northeast-2#/studio)
+2. Select domain and click **Edit**
+3. Click **Next**
+4. Enable **Enable Amazon SageMaker project templates and Amazon SageMaker JumpStart for Studio users**
+5. Click **Submit**
+
 ## Provision
 
 ```bash
