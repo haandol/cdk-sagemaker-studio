@@ -36,6 +36,20 @@ $ npm i
 4. Enable **Enable Amazon SageMaker project templates and Amazon SageMaker JumpStart for Studio users**
 5. Click **Submit**
 
+## Enable CodeWhisperer (Optional)
+
+https://docs.aws.amazon.com/codewhisperer/latest/userguide/sagemaker-setup.html
+
+open terminal and run following code,
+
+```bash
+conda activate studio
+pip install amazon-codewhisperer-jupyterlab-ext
+jupyter server extension enable amazon_codewhisperer_jupyterlab_ext
+conda deactivate
+restart-jupyter-server
+```
+
 ## Provision
 
 ```bash
