@@ -20,6 +20,9 @@ export class SagemakerStudioStack extends cdk.Stack {
         iam.ManagedPolicy.fromAwsManagedPolicyName(
           'AmazonSageMakerCanvasFullAccess'
         ),
+        iam.ManagedPolicy.fromAwsManagedPolicyName(
+          'AmazonSageMakerCanvasAIServicesAccess'
+        ),
       ],
     });
     executionRole.addToPrincipalPolicy(
@@ -31,6 +34,13 @@ export class SagemakerStudioStack extends cdk.Stack {
           's3:ListBucket',
         ],
         resources: ['arn:aws:s3:::*'],
+      })
+    );
+    // For CodeWhisperer
+    executionRole.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['codewhisperer:GenerateRecommendations'],
+        resources: ['*'],
       })
     );
 
