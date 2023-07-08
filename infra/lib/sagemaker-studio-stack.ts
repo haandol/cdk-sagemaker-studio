@@ -23,6 +23,9 @@ export class SagemakerStudioStack extends cdk.Stack {
         iam.ManagedPolicy.fromAwsManagedPolicyName(
           'AmazonSageMakerCanvasAIServicesAccess'
         ),
+        iam.ManagedPolicy.fromAwsManagedPolicyName(
+          'AmazonRekognitionReadOnlyAccess'
+        ),
       ],
     });
     executionRole.addToPrincipalPolicy(
