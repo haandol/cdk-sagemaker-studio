@@ -7,6 +7,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 interface IProps extends cdk.StackProps {
   readonly vpcId: string;
   readonly subnetIds: string[];
+  readonly availabilityZones: string[];
   readonly domainName: string;
 }
 
@@ -88,8 +89,9 @@ export class SagemakerStudioStack extends cdk.Stack {
   }
 
   private createVpcEndpoints(props: IProps) {
-    const vpc = ec2.Vpc.fromLookup(this, 'Vpc', {
+    const vpc = ec2.Vpc.fromVpcAttributes(this, 'Vpc', {
       vpcId: props.vpcId,
+      availabilityZones: props.availabilityZones,
     });
     const securityGroup = new ec2.SecurityGroup(this, 'VpceSecurityGroup', {
       vpc,

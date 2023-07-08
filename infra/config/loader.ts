@@ -11,6 +11,7 @@ interface IConfig {
   vpc: {
     id: string;
     subnetIds: string[];
+    availabilityZones: string[];
   };
   sagemaker: {
     domainName: string;
@@ -31,6 +32,7 @@ const schema = joi
     vpc: joi.object({
       id: joi.string().required(),
       subnetIds: joi.array().items(joi.string()).required(),
+      availabilityZones: joi.array().items(joi.string()).required(),
     }),
     sagemaker: joi.object({
       domainName: joi.string().required(),

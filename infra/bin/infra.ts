@@ -14,5 +14,6 @@ const app = new cdk.App({
 new SagemakerStudioStack(app, `${Config.app.ns}SagemakerStudioStack`, {
   vpcId: Config.vpc.id,
   subnetIds: Config.vpc.subnetIds,
+  availabilityZones: Config.vpc.availabilityZones,
   domainName: Config.sagemaker.domainName,
 });

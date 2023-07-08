@@ -5,6 +5,7 @@ stage="Dev"
 [vpc]
 id=""
 subnetIds=[""]
+availabilityZones=[""]
 
 [sagemaker]
 domainName="my-demo"
