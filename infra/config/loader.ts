@@ -8,7 +8,10 @@ interface IConfig {
     ns: string;
     stage: string;
   };
-  vpc: {
+  aws: {
+    region: string;
+  };
+  vpc?: {
     id: string;
     subnetIds: string[];
     availabilityZones: string[];
@@ -29,10 +32,12 @@ const schema = joi
       ns: joi.string().required(),
       stage: joi.string().required(),
     }),
+    aws: joi.object({
+      region: joi.string().required(),
+    }),
     vpc: joi.object({
-      id: joi.string().required(),
-      subnetIds: joi.array().items(joi.string()).required(),
-      availabilityZones: joi.array().items(joi.string()).required(),
+      id: joi.string().optional(),
+      availabilityZones: joi.array().items(joi.string()).optional(),
     }),
     sagemaker: joi.object({
       domainName: joi.string().required(),

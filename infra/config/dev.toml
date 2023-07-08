@@ -2,10 +2,12 @@
 ns="SagemakerStudioDemo"
 stage="Dev"
 
-[vpc]
-id=""
-subnetIds=[""]
-availabilityZones=[""]
+[aws]
+region="us-east-1"
+
+# [vpc]
+# id=""
+# availabilityZones=[""]
 
 [sagemaker]
 domainName="my-demo"

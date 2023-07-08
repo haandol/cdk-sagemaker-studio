@@ -5,9 +5,7 @@ import * as sm from 'aws-cdk-lib/aws-sagemaker';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
 interface IProps extends cdk.StackProps {
-  readonly vpcId: string;
-  readonly subnetIds: string[];
-  readonly availabilityZones: string[];
+  readonly vpc: ec2.IVpc;
   readonly domainName: string;
 }
 
@@ -60,8 +58,8 @@ export class SagemakerStudioStack extends cdk.Stack {
         },
       },
       domainName: props.domainName,
-      subnetIds: props.subnetIds,
-      vpcId: props.vpcId,
+      subnetIds: props.vpc.privateSubnets.map((subnet) => subnet.subnetId),
+      vpcId: props.vpc.vpcId,
       appNetworkAccessType: 'VpcOnly',
     });
 
@@ -89,12 +87,8 @@ export class SagemakerStudioStack extends cdk.Stack {
   }
 
   private createVpcEndpoints(props: IProps) {
-    const vpc = ec2.Vpc.fromVpcAttributes(this, 'Vpc', {
-      vpcId: props.vpcId,
-      availabilityZones: props.availabilityZones,
-    });
     const securityGroup = new ec2.SecurityGroup(this, 'VpceSecurityGroup', {
-      vpc,
+      vpc: props.vpc,
     });
     securityGroup.connections.allowInternally(
       ec2.Port.tcp(443),
@@ -110,60 +104,60 @@ export class SagemakerStudioStack extends cdk.Stack {
     );
 
     new ec2.InterfaceVpcEndpoint(this, 'SagemakerAPIVpcEndpoint', {
-      vpc,
+      vpc: props.vpc,
       service: ec2.InterfaceVpcEndpointAwsService.SAGEMAKER_API,
       subnets: {
-        subnets: vpc.privateSubnets,
+        subnets: props.vpc.privateSubnets,
       },
       securityGroups: [securityGroup],
       privateDnsEnabled: true,
     });
 
     new ec2.InterfaceVpcEndpoint(this, 'SagemakerRuntimeVpcEndpoint', {
-      vpc,
+      vpc: props.vpc,
       service: ec2.InterfaceVpcEndpointAwsService.SAGEMAKER_RUNTIME,
       subnets: {
-        subnets: vpc.privateSubnets,
+        subnets: props.vpc.privateSubnets,
       },
       securityGroups: [securityGroup],
       privateDnsEnabled: true,
     });
 
     new ec2.GatewayVpcEndpoint(this, 'S3VpcEndpoint', {
-      vpc,
+      vpc: props.vpc,
       service: ec2.GatewayVpcEndpointAwsService.S3,
       subnets: [
         {
-          subnets: vpc.privateSubnets,
+          subnets: props.vpc.privateSubnets,
         },
       ],
     });
 
-    new ec2.InterfaceVpcEndpoint(this, 'StsVpcEndpoint', {
-      vpc,
+    new ec2.InterfaceVpcEndpoint(this, 'ServiceCatalogVpcEndpoint', {
+      vpc: props.vpc,
       service: ec2.InterfaceVpcEndpointAwsService.SERVICE_CATALOG,
       subnets: {
-        subnets: vpc.privateSubnets,
+        subnets: props.vpc.privateSubnets,
       },
       securityGroups: [securityGroup],
       privateDnsEnabled: true,
     });
 
     new ec2.InterfaceVpcEndpoint(this, 'StsVpcEndpoint', {
-      vpc,
+      vpc: props.vpc,
       service: ec2.InterfaceVpcEndpointAwsService.STS,
       subnets: {
-        subnets: vpc.privateSubnets,
+        subnets: props.vpc.privateSubnets,
       },
       securityGroups: [securityGroup],
       privateDnsEnabled: true,
     });
 
     new ec2.InterfaceVpcEndpoint(this, 'CloudwatchVpcEndpoint', {
-      vpc,
+      vpc: props.vpc,
       service: ec2.InterfaceVpcEndpointAwsService.CLOUDWATCH_LOGS,
       subnets: {
-        subnets: vpc.privateSubnets,
+        subnets: props.vpc.privateSubnets,
       },
       securityGroups: [securityGroup],
       privateDnsEnabled: true,
