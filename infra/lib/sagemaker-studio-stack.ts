@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sm from 'aws-cdk-lib/aws-sagemaker';
+import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
 interface IProps extends cdk.StackProps {
@@ -28,17 +29,6 @@ export class SagemakerStudioStack extends cdk.Stack {
         ),
       ],
     });
-    executionRole.addToPrincipalPolicy(
-      new iam.PolicyStatement({
-        actions: [
-          's3:GetObject',
-          's3:PutObject',
-          's3:DeleteObject',
-          's3:ListBucket',
-        ],
-        resources: ['arn:aws:s3:::*'],
-      })
-    );
     // For CodeWhisperer
     executionRole.addToPrincipalPolicy(
       new iam.PolicyStatement({
@@ -46,6 +36,15 @@ export class SagemakerStudioStack extends cdk.Stack {
         resources: ['*'],
       })
     );
+
+    // TODO: change removal policy for production
+    const bucket = new s3.Bucket(this, 'Bucket', {
+      encryption: s3.BucketEncryption.S3_MANAGED,
+      enforceSSL: true,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      autoDeleteObjects: true,
+    });
+    bucket.grantReadWrite(executionRole);
 
     const domain = new sm.CfnDomain(this, 'SageMakerDomain', {
       authMode: 'IAM',
