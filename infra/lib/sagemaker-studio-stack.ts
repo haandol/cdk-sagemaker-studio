@@ -14,6 +14,8 @@ export class SagemakerStudioStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: IProps) {
     super(scope, id, props);
 
+    const securityGroup = this.createVpcEndpoints(props);
+
     const executionRole = new iam.Role(this, 'SageMakerExecutionRole', {
       assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
       managedPolicies: [
@@ -55,6 +57,7 @@ export class SagemakerStudioStack extends cdk.Stack {
             instanceType: 'system',
           },
         },
+        securityGroups: [securityGroup.securityGroupId],
       },
       domainName: props.domainName,
       subnetIds: props.vpc.privateSubnets.map((subnet) => subnet.subnetId),
@@ -81,8 +84,6 @@ export class SagemakerStudioStack extends cdk.Stack {
       },
     });
     app.addDependency(userProfile);
-
-    this.createVpcEndpoints(props);
   }
 
   // https://docs.aws.amazon.com/sagemaker/latest/dg/studio-notebooks-and-internet-access.html
@@ -162,5 +163,7 @@ export class SagemakerStudioStack extends cdk.Stack {
       securityGroups: [securityGroup],
       privateDnsEnabled: true,
     });
+
+    return securityGroup;
   }
 }
