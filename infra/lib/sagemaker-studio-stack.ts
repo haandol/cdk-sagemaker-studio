@@ -102,6 +102,16 @@ export class SagemakerStudioStack extends cdk.Stack {
       'internal KernelGateway'
     );
 
+    new ec2.InterfaceVpcEndpoint(this, 'StudioVpcEndpoint', {
+      vpc: props.vpc,
+      service: ec2.InterfaceVpcEndpointAwsService.SAGEMAKER_STUDIO,
+      subnets: {
+        subnets: props.vpc.privateSubnets,
+      },
+      securityGroups: [securityGroup],
+      privateDnsEnabled: true,
+    });
+
     new ec2.InterfaceVpcEndpoint(this, 'SagemakerAPIVpcEndpoint', {
       vpc: props.vpc,
       service: ec2.InterfaceVpcEndpointAwsService.SAGEMAKER_API,
