@@ -60,7 +60,7 @@ export class SagemakerStudioStack extends cdk.Stack {
       domainName: props.domainName,
       subnetIds: props.subnetIds,
       vpcId: props.vpcId,
-      appNetworkAccessType: 'PublicInternetOnly',
+      appNetworkAccessType: 'VpcOnly',
     });
 
     const userProfile = new sm.CfnUserProfile(this, 'SageMakerUserProfile', {
