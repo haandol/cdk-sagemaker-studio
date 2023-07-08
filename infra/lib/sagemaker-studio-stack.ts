@@ -105,9 +105,6 @@ export class SagemakerStudioStack extends cdk.Stack {
     new ec2.InterfaceVpcEndpoint(this, 'StudioVpcEndpoint', {
       vpc: props.vpc,
       service: ec2.InterfaceVpcEndpointAwsService.SAGEMAKER_STUDIO,
-      subnets: {
-        subnets: props.vpc.privateSubnets,
-      },
       securityGroups: [securityGroup],
       privateDnsEnabled: true,
     });
@@ -115,9 +112,6 @@ export class SagemakerStudioStack extends cdk.Stack {
     new ec2.InterfaceVpcEndpoint(this, 'SagemakerAPIVpcEndpoint', {
       vpc: props.vpc,
       service: ec2.InterfaceVpcEndpointAwsService.SAGEMAKER_API,
-      subnets: {
-        subnets: props.vpc.privateSubnets,
-      },
       securityGroups: [securityGroup],
       privateDnsEnabled: true,
     });
@@ -125,9 +119,6 @@ export class SagemakerStudioStack extends cdk.Stack {
     new ec2.InterfaceVpcEndpoint(this, 'SagemakerRuntimeVpcEndpoint', {
       vpc: props.vpc,
       service: ec2.InterfaceVpcEndpointAwsService.SAGEMAKER_RUNTIME,
-      subnets: {
-        subnets: props.vpc.privateSubnets,
-      },
       securityGroups: [securityGroup],
       privateDnsEnabled: true,
     });
@@ -145,9 +136,6 @@ export class SagemakerStudioStack extends cdk.Stack {
     new ec2.InterfaceVpcEndpoint(this, 'ServiceCatalogVpcEndpoint', {
       vpc: props.vpc,
       service: ec2.InterfaceVpcEndpointAwsService.SERVICE_CATALOG,
-      subnets: {
-        subnets: props.vpc.privateSubnets,
-      },
       securityGroups: [securityGroup],
       privateDnsEnabled: true,
     });
@@ -155,9 +143,6 @@ export class SagemakerStudioStack extends cdk.Stack {
     new ec2.InterfaceVpcEndpoint(this, 'StsVpcEndpoint', {
       vpc: props.vpc,
       service: ec2.InterfaceVpcEndpointAwsService.STS,
-      subnets: {
-        subnets: props.vpc.privateSubnets,
-      },
       securityGroups: [securityGroup],
       privateDnsEnabled: true,
     });
@@ -165,9 +150,6 @@ export class SagemakerStudioStack extends cdk.Stack {
     new ec2.InterfaceVpcEndpoint(this, 'CloudwatchVpcEndpoint', {
       vpc: props.vpc,
       service: ec2.InterfaceVpcEndpointAwsService.CLOUDWATCH_LOGS,
-      subnets: {
-        subnets: props.vpc.privateSubnets,
-      },
       securityGroups: [securityGroup],
       privateDnsEnabled: true,
     });
