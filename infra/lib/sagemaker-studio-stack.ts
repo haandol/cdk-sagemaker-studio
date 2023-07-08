@@ -7,7 +7,6 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 interface IProps extends cdk.StackProps {
   readonly vpcId: string;
   readonly subnetIds: string[];
-  readonly availableZones: string[];
   readonly domainName: string;
 }
 
@@ -89,54 +88,44 @@ export class SagemakerStudioStack extends cdk.Stack {
   }
 
   private createVpcEndpoints(props: IProps) {
-    const vpc = ec2.Vpc.fromVpcAttributes(this, 'Vpc', {
+    const vpc = ec2.Vpc.fromLookup(this, 'Vpc', {
       vpcId: props.vpcId,
-      availabilityZones: props.availableZones,
     });
-
     const securityGroup = new ec2.SecurityGroup(this, 'VpceSecurityGroup', {
       vpc,
     });
     securityGroup.connections.allowInternally(
+      ec2.Port.tcp(443),
+      'internal SDK'
+    );
+    securityGroup.connections.allowInternally(
       ec2.Port.tcp(2049),
       'internal NFS'
     );
-
-    const apiEndpoint = new ec2.InterfaceVpcEndpoint(
-      this,
-      'SagemakerAPIVpcEndpoint',
-      {
-        vpc,
-        service: ec2.InterfaceVpcEndpointAwsService.SAGEMAKER_API,
-        subnets: {
-          subnets: vpc.privateSubnets,
-        },
-        securityGroups: [securityGroup],
-        privateDnsEnabled: true,
-      }
-    );
-    apiEndpoint.connections.allowInternally(
+    securityGroup.connections.allowInternally(
       ec2.Port.tcpRange(8192, 65535),
       'internal KernelGateway'
     );
 
-    const runtimeEndpoint = new ec2.InterfaceVpcEndpoint(
-      this,
-      'SagemakerRuntimeVpcEndpoint',
-      {
-        vpc,
-        service: ec2.InterfaceVpcEndpointAwsService.SAGEMAKER_RUNTIME,
-        subnets: {
-          subnets: vpc.privateSubnets,
-        },
-        securityGroups: [securityGroup],
-        privateDnsEnabled: true,
-      }
-    );
-    runtimeEndpoint.connections.allowInternally(
-      ec2.Port.tcpRange(8192, 65535),
-      'internal KernelGateway'
-    );
+    new ec2.InterfaceVpcEndpoint(this, 'SagemakerAPIVpcEndpoint', {
+      vpc,
+      service: ec2.InterfaceVpcEndpointAwsService.SAGEMAKER_API,
+      subnets: {
+        subnets: vpc.privateSubnets,
+      },
+      securityGroups: [securityGroup],
+      privateDnsEnabled: true,
+    });
+
+    new ec2.InterfaceVpcEndpoint(this, 'SagemakerRuntimeVpcEndpoint', {
+      vpc,
+      service: ec2.InterfaceVpcEndpointAwsService.SAGEMAKER_RUNTIME,
+      subnets: {
+        subnets: vpc.privateSubnets,
+      },
+      securityGroups: [securityGroup],
+      privateDnsEnabled: true,
+    });
 
     new ec2.GatewayVpcEndpoint(this, 'S3VpcEndpoint', {
       vpc,
@@ -148,25 +137,17 @@ export class SagemakerStudioStack extends cdk.Stack {
       ],
     });
 
-    const serviceCatalogEndpoint = new ec2.InterfaceVpcEndpoint(
-      this,
-      'StsVpcEndpoint',
-      {
-        vpc,
-        service: ec2.InterfaceVpcEndpointAwsService.SERVICE_CATALOG,
-        subnets: {
-          subnets: vpc.privateSubnets,
-        },
-        securityGroups: [securityGroup],
-        privateDnsEnabled: true,
-      }
-    );
-    serviceCatalogEndpoint.connections.allowInternally(
-      ec2.Port.tcp(443),
-      'internal ServiceCatalog'
-    );
+    new ec2.InterfaceVpcEndpoint(this, 'StsVpcEndpoint', {
+      vpc,
+      service: ec2.InterfaceVpcEndpointAwsService.SERVICE_CATALOG,
+      subnets: {
+        subnets: vpc.privateSubnets,
+      },
+      securityGroups: [securityGroup],
+      privateDnsEnabled: true,
+    });
 
-    const stsEndpoint = new ec2.InterfaceVpcEndpoint(this, 'StsVpcEndpoint', {
+    new ec2.InterfaceVpcEndpoint(this, 'StsVpcEndpoint', {
       vpc,
       service: ec2.InterfaceVpcEndpointAwsService.STS,
       subnets: {
@@ -175,24 +156,15 @@ export class SagemakerStudioStack extends cdk.Stack {
       securityGroups: [securityGroup],
       privateDnsEnabled: true,
     });
-    stsEndpoint.connections.allowInternally(ec2.Port.tcp(443), 'internal STS');
 
-    const cloudwatchEndpoint = new ec2.InterfaceVpcEndpoint(
-      this,
-      'CloudwatchVpcEndpoint',
-      {
-        vpc,
-        service: ec2.InterfaceVpcEndpointAwsService.CLOUDWATCH_LOGS,
-        subnets: {
-          subnets: vpc.privateSubnets,
-        },
-        securityGroups: [securityGroup],
-        privateDnsEnabled: true,
-      }
-    );
-    cloudwatchEndpoint.connections.allowInternally(
-      ec2.Port.tcp(443),
-      'internal cloudwatch'
-    );
+    new ec2.InterfaceVpcEndpoint(this, 'CloudwatchVpcEndpoint', {
+      vpc,
+      service: ec2.InterfaceVpcEndpointAwsService.CLOUDWATCH_LOGS,
+      subnets: {
+        subnets: vpc.privateSubnets,
+      },
+      securityGroups: [securityGroup],
+      privateDnsEnabled: true,
+    });
   }
 }
