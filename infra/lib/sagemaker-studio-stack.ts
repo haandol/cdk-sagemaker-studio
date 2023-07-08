@@ -85,6 +85,7 @@ export class SagemakerStudioStack extends cdk.Stack {
     this.createVpcEndpoints(props);
   }
 
+  // https://docs.aws.amazon.com/sagemaker/latest/dg/studio-notebooks-and-internet-access.html
   private createVpcEndpoints(props: IProps) {
     const securityGroup = new ec2.SecurityGroup(this, 'VpceSecurityGroup', {
       vpc: props.vpc,
@@ -150,6 +151,14 @@ export class SagemakerStudioStack extends cdk.Stack {
     new ec2.InterfaceVpcEndpoint(this, 'CloudwatchVpcEndpoint', {
       vpc: props.vpc,
       service: ec2.InterfaceVpcEndpointAwsService.CLOUDWATCH_LOGS,
+      securityGroups: [securityGroup],
+      privateDnsEnabled: true,
+    });
+
+    // Rekognition
+    new ec2.InterfaceVpcEndpoint(this, 'RekognitionVpcEndpoint', {
+      vpc: props.vpc,
+      service: ec2.InterfaceVpcEndpointAwsService.REKOGNITION,
       securityGroups: [securityGroup],
       privateDnsEnabled: true,
     });
