@@ -1,5 +1,9 @@
 # Sagemaker Studio with VPC using CDK
 
+This repository will provision following resources to your account.
+
+<img src="https://docs.aws.amazon.com/images/sagemaker/latest/dg/images/studio/studio-vpc-private.png" alt="studui vpc" />
+
 # Prerequisite
 
 - setup awscli
