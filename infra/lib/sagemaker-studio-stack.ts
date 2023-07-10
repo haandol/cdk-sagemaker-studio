@@ -2,7 +2,6 @@ import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sm from 'aws-cdk-lib/aws-sagemaker';
-import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 
 interface IProps extends cdk.StackProps {
@@ -16,15 +15,6 @@ export class SagemakerStudioStack extends cdk.Stack {
 
     const securityGroup = this.newSecurityGroup(props.vpc);
     const executionRole = this.newExecutionRole();
-
-    // TODO: change removal policy for production
-    const bucket = new s3.Bucket(this, 'Bucket', {
-      encryption: s3.BucketEncryption.S3_MANAGED,
-      enforceSSL: true,
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-      autoDeleteObjects: true,
-    });
-    bucket.grantReadWrite(executionRole);
 
     const domain = new sm.CfnDomain(this, 'SageMakerDomain', {
       authMode: 'IAM',
@@ -160,9 +150,12 @@ export class SagemakerStudioStack extends cdk.Stack {
         iam.ManagedPolicy.fromAwsManagedPolicyName(
           'AmazonSageMakerCanvasAIServicesAccess'
         ),
+        // For Rekognition
         iam.ManagedPolicy.fromAwsManagedPolicyName(
           'AmazonRekognitionReadOnlyAccess'
         ),
+        // For S3
+        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonS3FullAccess'),
       ],
     });
     // For CodeWhisperer
