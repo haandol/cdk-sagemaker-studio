@@ -14,30 +14,8 @@ export class SagemakerStudioStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: IProps) {
     super(scope, id, props);
 
-    const securityGroup = this.createVpcEndpoints(props);
-
-    const executionRole = new iam.Role(this, 'SageMakerExecutionRole', {
-      assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
-      managedPolicies: [
-        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess'),
-        iam.ManagedPolicy.fromAwsManagedPolicyName(
-          'AmazonSageMakerCanvasFullAccess'
-        ),
-        iam.ManagedPolicy.fromAwsManagedPolicyName(
-          'AmazonSageMakerCanvasAIServicesAccess'
-        ),
-        iam.ManagedPolicy.fromAwsManagedPolicyName(
-          'AmazonRekognitionReadOnlyAccess'
-        ),
-      ],
-    });
-    // For CodeWhisperer
-    executionRole.addToPrincipalPolicy(
-      new iam.PolicyStatement({
-        actions: ['codewhisperer:GenerateRecommendations'],
-        resources: ['*'],
-      })
-    );
+    const securityGroup = this.newSecurityGroup(props.vpc);
+    const executionRole = this.newExecutionRole();
 
     // TODO: change removal policy for production
     const bucket = new s3.Bucket(this, 'Bucket', {
@@ -84,13 +62,12 @@ export class SagemakerStudioStack extends cdk.Stack {
       },
     });
     app.addDependency(userProfile);
+
+    this.createVpcEndpoints(props.vpc, securityGroup);
   }
 
-  // https://docs.aws.amazon.com/sagemaker/latest/dg/studio-notebooks-and-internet-access.html
-  private createVpcEndpoints(props: IProps) {
-    const securityGroup = new ec2.SecurityGroup(this, 'VpceSecurityGroup', {
-      vpc: props.vpc,
-    });
+  private newSecurityGroup(vpc: ec2.IVpc): ec2.ISecurityGroup {
+    const securityGroup = new ec2.SecurityGroup(this, 'SecurityGroup', { vpc });
     securityGroup.connections.allowInternally(
       ec2.Port.tcp(443),
       'internal SDK'
@@ -103,54 +80,61 @@ export class SagemakerStudioStack extends cdk.Stack {
       ec2.Port.tcpRange(8192, 65535),
       'internal KernelGateway'
     );
+    return securityGroup;
+  }
 
+  // https://docs.aws.amazon.com/sagemaker/latest/dg/studio-notebooks-and-internet-access.html
+  private createVpcEndpoints(
+    vpc: ec2.IVpc,
+    securityGroup: ec2.ISecurityGroup
+  ): void {
     new ec2.InterfaceVpcEndpoint(this, 'StudioVpcEndpoint', {
-      vpc: props.vpc,
+      vpc,
       service: ec2.InterfaceVpcEndpointAwsService.SAGEMAKER_STUDIO,
       securityGroups: [securityGroup],
       privateDnsEnabled: true,
     });
 
     new ec2.InterfaceVpcEndpoint(this, 'SagemakerAPIVpcEndpoint', {
-      vpc: props.vpc,
+      vpc,
       service: ec2.InterfaceVpcEndpointAwsService.SAGEMAKER_API,
       securityGroups: [securityGroup],
       privateDnsEnabled: true,
     });
 
     new ec2.InterfaceVpcEndpoint(this, 'SagemakerRuntimeVpcEndpoint', {
-      vpc: props.vpc,
+      vpc,
       service: ec2.InterfaceVpcEndpointAwsService.SAGEMAKER_RUNTIME,
       securityGroups: [securityGroup],
       privateDnsEnabled: true,
     });
 
     new ec2.GatewayVpcEndpoint(this, 'S3VpcEndpoint', {
-      vpc: props.vpc,
+      vpc,
       service: ec2.GatewayVpcEndpointAwsService.S3,
       subnets: [
         {
-          subnets: props.vpc.privateSubnets,
+          subnets: vpc.privateSubnets,
         },
       ],
     });
 
     new ec2.InterfaceVpcEndpoint(this, 'ServiceCatalogVpcEndpoint', {
-      vpc: props.vpc,
+      vpc,
       service: ec2.InterfaceVpcEndpointAwsService.SERVICE_CATALOG,
       securityGroups: [securityGroup],
       privateDnsEnabled: true,
     });
 
     new ec2.InterfaceVpcEndpoint(this, 'StsVpcEndpoint', {
-      vpc: props.vpc,
+      vpc,
       service: ec2.InterfaceVpcEndpointAwsService.STS,
       securityGroups: [securityGroup],
       privateDnsEnabled: true,
     });
 
     new ec2.InterfaceVpcEndpoint(this, 'CloudwatchVpcEndpoint', {
-      vpc: props.vpc,
+      vpc,
       service: ec2.InterfaceVpcEndpointAwsService.CLOUDWATCH_LOGS,
       securityGroups: [securityGroup],
       privateDnsEnabled: true,
@@ -158,12 +142,36 @@ export class SagemakerStudioStack extends cdk.Stack {
 
     // Rekognition
     new ec2.InterfaceVpcEndpoint(this, 'RekognitionVpcEndpoint', {
-      vpc: props.vpc,
+      vpc,
       service: ec2.InterfaceVpcEndpointAwsService.REKOGNITION,
       securityGroups: [securityGroup],
       privateDnsEnabled: true,
     });
+  }
 
-    return securityGroup;
+  private newExecutionRole() {
+    const role = new iam.Role(this, 'SageMakerExecutionRole', {
+      assumedBy: new iam.ServicePrincipal('sagemaker.amazonaws.com'),
+      managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonSageMakerFullAccess'),
+        iam.ManagedPolicy.fromAwsManagedPolicyName(
+          'AmazonSageMakerCanvasFullAccess'
+        ),
+        iam.ManagedPolicy.fromAwsManagedPolicyName(
+          'AmazonSageMakerCanvasAIServicesAccess'
+        ),
+        iam.ManagedPolicy.fromAwsManagedPolicyName(
+          'AmazonRekognitionReadOnlyAccess'
+        ),
+      ],
+    });
+    // For CodeWhisperer
+    role.addToPrincipalPolicy(
+      new iam.PolicyStatement({
+        actions: ['codewhisperer:GenerateRecommendations'],
+        resources: ['*'],
+      })
+    );
+    return role;
   }
 }

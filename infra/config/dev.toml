@@ -5,6 +5,7 @@ stage="Dev"
 [aws]
 region="us-east-1"
 
+# if vpc is not given, cdk will create a new one for you
 # [vpc]
 # id=""
 # availabilityZones=[""]
