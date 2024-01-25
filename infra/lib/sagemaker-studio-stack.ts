@@ -23,7 +23,7 @@ export class SagemakerStudioStack extends cdk.Stack {
         spaceStorageSettings: {
           defaultEbsStorageSettings: {
             defaultEbsVolumeSizeInGb: 5,
-            maximumEbsVolumeSizeInGb: 2048,
+            maximumEbsVolumeSizeInGb: 100,
           },
         },
         jupyterServerAppSettings: {
@@ -44,6 +44,12 @@ export class SagemakerStudioStack extends cdk.Stack {
       userProfileName: 'default',
       userSettings: {
         executionRole: executionRole.roleArn,
+        spaceStorageSettings: {
+          defaultEbsStorageSettings: {
+            defaultEbsVolumeSizeInGb: 5,
+            maximumEbsVolumeSizeInGb: 2048,
+          },
+        },
       },
     });
     userProfile.addDependency(domain);
