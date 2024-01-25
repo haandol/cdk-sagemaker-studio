@@ -150,6 +150,10 @@ export class SagemakerStudioStack extends cdk.Stack {
         iam.ManagedPolicy.fromAwsManagedPolicyName(
           'AmazonSageMakerCanvasAIServicesAccess'
         ),
+        // For ECR
+        iam.ManagedPolicy.fromAwsManagedPolicyName(
+          'AmazonEC2ContainerRegistryFullAccess'
+        ),
         // For Codecommit
         iam.ManagedPolicy.fromAwsManagedPolicyName('AWSCodeCommitPowerUser'),
         // For Rekognition

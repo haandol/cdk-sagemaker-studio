@@ -19,7 +19,7 @@ export class VpcStack extends Stack {
         availabilityZones: props.availabilityZones,
       });
     } else {
-      this.vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 3 });
+      this.vpc = new ec2.Vpc(this, 'Vpc', { maxAzs: 2 });
     }
   }
 }

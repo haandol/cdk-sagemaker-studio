@@ -11,4 +11,4 @@ region="us-east-1"
 # availabilityZones=[""]
 
 [sagemaker]
-domainName="my-demo"
+domainName="default"
