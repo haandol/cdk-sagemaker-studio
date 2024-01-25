@@ -20,6 +20,12 @@ export class SagemakerStudioStack extends cdk.Stack {
       authMode: 'IAM',
       defaultUserSettings: {
         executionRole: executionRole.roleArn,
+        spaceStorageSettings: {
+          defaultEbsStorageSettings: {
+            defaultEbsVolumeSizeInGb: 5,
+            maximumEbsVolumeSizeInGb: 2048,
+          },
+        },
         jupyterServerAppSettings: {
           defaultResourceSpec: {
             instanceType: 'system',
