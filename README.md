@@ -62,3 +62,7 @@ jupyter server extension enable amazon_codewhisperer_jupyterlab_ext
 conda deactivate
 restart-jupyter-server
 ```
+
+## Enable Docker on Sagemaker Studio (Optional)
+
+https://docs.aws.amazon.com/sagemaker/latest/dg/studio-updated-local.html
