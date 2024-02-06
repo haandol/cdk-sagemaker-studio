@@ -7,6 +7,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2';
 interface IProps extends cdk.StackProps {
   readonly vpc: ec2.IVpc;
   readonly domainName: string;
+  readonly accessType: string;
 }
 
 export class SagemakerStudioStack extends cdk.Stack {
@@ -39,7 +40,7 @@ export class SagemakerStudioStack extends cdk.Stack {
       domainName: props.domainName,
       subnetIds: props.vpc.privateSubnets.map((subnet) => subnet.subnetId),
       vpcId: props.vpc.vpcId,
-      appNetworkAccessType: 'VpcOnly',
+      appNetworkAccessType: props.accessType,
     });
 
     const userProfile = new sm.CfnUserProfile(this, 'SageMakerUserProfile', {

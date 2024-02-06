@@ -18,6 +18,7 @@ interface IConfig {
   };
   sagemaker: {
     domainName: string;
+    accessType: 'VpcOnly' | 'InternetOnly';
   };
 }
 
@@ -41,6 +42,7 @@ const schema = joi
     }),
     sagemaker: joi.object({
       domainName: joi.string().required(),
+      accessType: joi.string().valid('VpcOnly', 'InternetOnly').required(),
     }),
   })
   .unknown();

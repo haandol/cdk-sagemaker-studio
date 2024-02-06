@@ -12,3 +12,4 @@ region="us-east-1"
 
 [sagemaker]
 domainName="default"
+accessType="VpcOnly"
