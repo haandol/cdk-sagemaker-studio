@@ -4,10 +4,12 @@ This repository will provision following resources to your account.
 
 <img src="https://docs.aws.amazon.com/images/sagemaker/latest/dg/images/studio/studio-vpc-private.png" alt="studui vpc" />
 
+<img src="https://d2908q01vomqb2.cloudfront.net/f1f836cb4ea6efb2a0b1b99f41ad8b103eff4b59/2023/12/14/ML-16046-image015.jpg" alt="studio architecture" />
+
 # Prerequisite
 
 - setup awscli
-- node 16.x
+- node 18.x
 - cdk 2.x
 
 ## Configuration
@@ -26,7 +28,7 @@ $ cp config/dev.toml .toml
 
 ```bash
 $ cd infra
-$ npm i -g aws-cdk@2.113.0
+$ npm i -g aws-cdk@2.126.0
 $ npm i
 ```
 
