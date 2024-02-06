@@ -23,7 +23,7 @@ export class SagemakerStudioStack extends cdk.Stack {
         spaceStorageSettings: {
           defaultEbsStorageSettings: {
             defaultEbsVolumeSizeInGb: 5,
-            maximumEbsVolumeSizeInGb: 100,
+            maximumEbsVolumeSizeInGb: 1024,
           },
         },
         jupyterServerAppSettings: {
@@ -32,6 +32,19 @@ export class SagemakerStudioStack extends cdk.Stack {
           },
         },
         securityGroups: [securityGroup.securityGroupId],
+      },
+      defaultSpaceSettings: {
+        executionRole: executionRole.roleArn,
+        jupyterServerAppSettings: {
+          defaultResourceSpec: {
+            instanceType: 'system',
+          },
+        },
+        kernelGatewayAppSettings: {
+          defaultResourceSpec: {
+            instanceType: 'ml.g5.2xlarge',
+          },
+        },
       },
       domainName: props.domainName,
       subnetIds: props.vpc.privateSubnets.map((subnet) => subnet.subnetId),
@@ -46,7 +59,7 @@ export class SagemakerStudioStack extends cdk.Stack {
         executionRole: executionRole.roleArn,
         jupyterLabAppSettings: {
           defaultResourceSpec: {
-            instanceType: 'ml.g5.2xlarge',
+            instanceType: 'ml.t3.medium',
           },
         },
         spaceStorageSettings: {
@@ -59,15 +72,10 @@ export class SagemakerStudioStack extends cdk.Stack {
     });
     userProfile.addDependency(domain);
 
-    const space = new sm.CfnSpace(this, 'DefaultUserSpace', {
+    const space = new sm.CfnSpace(this, 'MLDefaultSpace', {
       domainId: domain.attrDomainId,
-      spaceName: 'default',
+      spaceName: 'ml-default',
       spaceSettings: {
-        jupyterServerAppSettings: {
-          defaultResourceSpec: {
-            instanceType: 'system',
-          },
-        },
         kernelGatewayAppSettings: {
           defaultResourceSpec: {
             instanceType: 'ml.g5.2xlarge',
