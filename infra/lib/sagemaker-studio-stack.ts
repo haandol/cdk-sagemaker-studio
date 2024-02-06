@@ -47,6 +47,11 @@ export class SagemakerStudioStack extends cdk.Stack {
       userProfileName: 'default',
       userSettings: {
         executionRole: executionRole.roleArn,
+        jupyterLabAppSettings: {
+          defaultResourceSpec: {
+            instanceType: 'ml.g5.2xlarge',
+          },
+        },
         spaceStorageSettings: {
           defaultEbsStorageSettings: {
             defaultEbsVolumeSizeInGb: 5,
