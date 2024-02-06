@@ -46,7 +46,7 @@ export class SagemakerStudioStack extends cdk.Stack {
         executionRole: executionRole.roleArn,
         jupyterLabAppSettings: {
           defaultResourceSpec: {
-            instanceType: 'ml.g5.4xlarge',
+            instanceType: 'ml.g5.2xlarge',
           },
         },
         spaceStorageSettings: {
@@ -59,16 +59,23 @@ export class SagemakerStudioStack extends cdk.Stack {
     });
     userProfile.addDependency(domain);
 
-    const app = new sm.CfnApp(this, 'DefaultJupyterServerApp', {
-      appName: 'default',
-      appType: 'JupyterServer',
+    const space = new sm.CfnSpace(this, 'DefaultUserSpace', {
       domainId: domain.attrDomainId,
-      userProfileName: userProfile.userProfileName,
-      resourceSpec: {
-        instanceType: 'system',
+      spaceName: 'default',
+      spaceSettings: {
+        jupyterServerAppSettings: {
+          defaultResourceSpec: {
+            instanceType: 'system',
+          },
+        },
+        kernelGatewayAppSettings: {
+          defaultResourceSpec: {
+            instanceType: 'ml.g5.2xlarge',
+          },
+        },
       },
     });
-    app.addDependency(userProfile);
+    space.addDependency(domain);
 
     this.createVpcEndpoints(props.vpc, securityGroup);
   }
